@@ -12,6 +12,20 @@ set -o pipefail
 # TODO: lock, and unlock on trap exit
 # TODO: non-darwin compatibility
 
+update() {
+    this="$(basename "${1}")"
+    url="${2}"
+    tempfile="$(mktemp "/tmp/${this}".XXXXXX)"
+    curl -L "${url}" > "${tempfile}"
+    cat "${tempfile}" > "${this}"
+    rm "${tempfile}"
+    exit
+}
+
+if [[ ${1:-} = '-u' ]]; then
+    update "${BASH_SOURCE[0]}" 'https://raw.githubusercontent.com/lloeki/rsync-backup/master/rsync-backup.sh'
+fi
+
 if [[ -z "${HOME}" ]]; then
     echo "error: \$HOME unset" 1>&2
     exit 1
